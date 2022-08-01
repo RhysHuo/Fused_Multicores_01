@@ -244,7 +244,7 @@ void scale(ap_int<32> *quantized_multiplier, ap_int<32> *shift, ap_int<32> *bias
 
 	LOOP_CH1:    
 		for (int i = 0; i < N_4; i+=4) {
-
+			/*
 			ap_int<32> bias_val[4];
 			ap_int<32> shift_val[4];
 			ap_int<32> mult_val[4];
@@ -260,6 +260,7 @@ void scale(ap_int<32> *quantized_multiplier, ap_int<32> *shift, ap_int<32> *bias
 			mult_val[1] = quantized_multiplier[i+1];
 			mult_val[2] = quantized_multiplier[i+2];
 			mult_val[3] = quantized_multiplier[i+3];
+			*/
 
 
 			//LOOP_CW1: for (int j = 0; j < B_WIDTH_INT; j++) {
@@ -267,13 +268,16 @@ void scale(ap_int<32> *quantized_multiplier, ap_int<32> *shift, ap_int<32> *bias
 				for (int j = 0; j < B_WIDTH_BLOCK; j++) {
 					#pragma HLS PIPELINE II=4	
 					//#pragma HLS UNROLL factor=2
+					/*
 					DTYPE C_out;
+					*/
 					LOOP_CH3:    
 						for (int z = 0; z < 4; z++) {
 							//#pragma HLS PIPELINE
 							#pragma HLS loop_tripcount min=1 max=1 avg=1
 							if (j<B_WIDTH_INT)
 							{
+								/*
 								#ifdef ENABLE_SCALING
 								ap_int<64> C_temp1 =  C_fifo[j].read() + bias_val[z];
 								ap_int<32> total_shift1 = 31 - shift_val[z];
@@ -288,7 +292,8 @@ void scale(ap_int<32> *quantized_multiplier, ap_int<32> *shift, ap_int<32> *bias
 								if (C_temp1 > clamp_max) C_temp5 = clamp_max; 
 
 								C_out = ((C_out >> 8) | ((int)C_temp5 << 24));
-
+								*/
+								ap_int<64> C_temp1 =  C_fifo[j].read();
 								write_fifo[j] << C_temp1;
 								/*
 								if (z==3)
@@ -433,9 +438,11 @@ void kernelMult(
 	#pragma HLS INTERFACE m_axi port=values offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=columnIndex offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=rowPtr offset=slave bundle=gmem0
+	/*
 	#pragma HLS INTERFACE m_axi port=quantized_multiplier offset=slave bundle=gmem2
 	#pragma HLS INTERFACE m_axi port=shift offset=slave bundle=gmem2
 	#pragma HLS INTERFACE m_axi port=bias offset=slave bundle=gmem2
+	*/
 
 	mmult_top(
 		mode, 
