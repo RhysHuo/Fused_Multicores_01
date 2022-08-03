@@ -231,7 +231,7 @@ void compute(ap_uint<2> mode, ap_int<8> zero_point_lhs,  ap_int<8> zero_point_rh
 
 void scale(ap_int<32> *quantized_multiplier, ap_int<32> *shift, ap_int<32> *bias, ap_int<8> zero_point_dst, ap_int<8> clamp_max,ap_int<8> clamp_min,int N, int M, int P, hls::stream<DTYPE_OUT> C_fifo[C_WIDTH_BLOCK],int B_index, int B_index_loop,int tail,hls::stream<DTYPE_OUT> write_fifo[C_WIDTH_BLOCK])
 {
-
+			ap_int<64> C_temp1 = 0;
 			int B_WIDTH_INT;
 			if (B_index < (B_index_loop-1))
 				B_WIDTH_INT = B_WIDTH_BLOCK;
@@ -245,7 +245,7 @@ void scale(ap_int<32> *quantized_multiplier, ap_int<32> *shift, ap_int<32> *bias
 							#pragma HLS PIPELINE 
 							if (j<B_WIDTH_INT)
 							{
-								ap_int<64> C_temp1 =  C_fifo[j].read();
+								C_temp1 =  C_fifo[j].read();
 								write_fifo[j] << C_temp1;
 
 							}
@@ -303,8 +303,6 @@ void mmult_wrapper(ap_uint<2> mode, ap_int<32> *quantized_multiplier, ap_int<32>
 	writec(N, P, write_fifo, C, array_c_adjust, B_index, B_index_loop, tail);
 	
 }
-
-typedef unsigned long u32;
 
 void mmult_top(ap_uint<2> mode, ap_int<32> *quantized_multiplier, ap_int<32> *shift, ap_int<32> *bias,  ap_int<32> bias_count, ap_int<8> zero_point_lhs,  ap_int<8> zero_point_rhs, ap_int<8> zero_point_dst, ap_int<8> clamp_max,ap_int<8> clamp_min,int N, int M, int P, DTYPE* A, DTYPE* B, DTYPE* C,int array_c_adjust,int *rowPtr,int *columnIndex, DTYPE *values,int nnz)
 {
