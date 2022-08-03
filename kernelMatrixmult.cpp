@@ -326,26 +326,59 @@ void kernelMult(
 	ap_int<8> zero_point_dst, 
 	ap_int<8> clamp_max,
 	ap_int<8> clamp_min,
+	DTYPE* array_a, 
+	DTYPE* array_b, 
+	DTYPE* array_c,
+	DTYPE *values,
+	int *columnIndex,
+	int *rowPtr,
+	int nnz,
 	int N, 
 	int M, 
-	int P, 
-	DTYPE* A, 
-	DTYPE* B, 
-	DTYPE* C,
-	int array_c_adjust,
-	int *rowPtr,
-	int *columnIndex,
-	DTYPE *values,
-	int nnz
+	int P
 )
 {
-	#pragma HLS INTERFACE m_axi port=A offset=slave bundle=gmem0
-	#pragma HLS INTERFACE m_axi port=B offset=slave bundle=gmem1
-	#pragma HLS INTERFACE m_axi port=C offset=slave bundle=gmem0
+	/*
+	#pragma HLS INTERFACE m_axi port=array_a offset=slave bundle=gmem0
+	#pragma HLS INTERFACE m_axi port=array_b offset=slave bundle=gmem1
+	#pragma HLS INTERFACE m_axi port=array_c offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=values offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=columnIndex offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=rowPtr offset=slave bundle=gmem0
-
+	*/
+	
+	#pragma HLS INTERFACE m_axi port=array_a offset=slave bundle=gmem0
+	#pragma HLS INTERFACE m_axi port=array_b offset=slave bundle=gmem1
+	#pragma HLS INTERFACE m_axi port=array_c offset=slave bundle=gmem2
+	#pragma HLS INTERFACE m_axi port=values offset=slave bundle=gmem3
+	#pragma HLS INTERFACE m_axi port=colIndices offset=slave bundle=gmem4
+	#pragma HLS INTERFACE m_axi port=rowPtr offset=slave bundle=gmem4
+	
+	int N_block,P_block;
+	int *rowPtr_block;
+	int *colIndices_block;
+	DTYPE *values_block;
+	
+	DTYPE *array_a_block;
+	DTYPE *array_b_block;
+	DTYPE *array_c_block;
+	
+	int array_c_adjust = N;
+	
+	int core_count = 1;
+	
+	N_block = N;
+	P_block = P / core_count;
+	P_tail = P % core_count;
+	
+	array_a_block = (DTYPE*)(array_a);
+	array_b_block = (DTYPE*)(array_b);
+	array_c_block = (DTYPE*)(array_c);
+	
+	rowPtr_block = rowPtr;
+	colIndices_block = colIndices;
+	values_block = values;
+	
 	mmult_top(
 		mode, 
 		quantized_multiplier, 
@@ -357,16 +390,16 @@ void kernelMult(
 		zero_point_dst, 
 		clamp_max, 
 		clamp_min, 
-		N, 
+		N_block, 
 		M, 
-		P, 
-		A, 
-		B, 
-		C, 
+		P_block+P_tail, 
+		array_a_block, 
+		array_b_block, 
+		array_c_block, 
 		array_c_adjust, 
-		rowPtr, 
-		columnIndex, 
-		values, 
+		rowPtr_block, 
+		colIndices_block, 
+		values_block, 
 		nnz
 	);
 }
