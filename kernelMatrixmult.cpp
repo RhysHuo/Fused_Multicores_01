@@ -330,7 +330,7 @@ void kernelMult(
 	DTYPE* array_b, 
 	DTYPE* array_c,
 	DTYPE *values,
-	int *columnIndex,
+	int *colIndices,
 	int *rowPtr,
 	int nnz,
 	int N, 
@@ -366,6 +366,7 @@ void kernelMult(
 	int array_c_adjust = N;
 	
 	int core_count = 1;
+	int P_tail = 0;
 	
 	N_block = N;
 	P_block = P / core_count;
