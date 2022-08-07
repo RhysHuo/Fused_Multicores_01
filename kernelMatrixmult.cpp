@@ -67,21 +67,23 @@ void compute(ap_uint<2> mode, ap_int<8> zero_point_lhs,  ap_int<8> zero_point_rh
 	
        //#pragma HLS allocation function instances=dsp_kernel limit=1
 	DTYPE B_accel[B_HEIGHT][B_WIDTH_BLOCK];
+	#pragma HLS array_partition variable=B_accel block factor= 4 dim=1
     	#pragma HLS array_partition variable=B_accel block factor= BLOCK/2 dim=2
 
         //hls::stream<DTYPE>       A_accel;
         //#pragma HLS STREAM variable=A_accel depth=A_WIDTH_FIFO dim=1
 
 	DTYPE A_accel[A_WIDTH];
+	#pragma HLS array_partition variable=A_accel block factor= 16 dim=1
         //#pragma HLS array_partition variable=A_accel cyclic factor=
 
 
 	DTYPE_OUT acc[B_WIDTH_BLOCK];
-	#pragma HLS ARRAY_PARTITION variable=acc complete
+	#pragma HLS array_partition variable=acc complete
 
 
 	DTYPE_OUT acc2[B_WIDTH_BLOCK];
-	#pragma HLS ARRAY_PARTITION variable=acc2 complete
+	#pragma HLS array_partition variable=acc2 complete
 
 	//hls::stream<int>             col_indices_fifo;
 	//#pragma HLS STREAM variable=col_indices_fifo depth=1024 dim=1
@@ -202,7 +204,7 @@ void compute(ap_uint<2> mode, ap_int<8> zero_point_lhs,  ap_int<8> zero_point_rh
 			DSP_LOOP_SPMM: 
 				for (int i = 0; i < rnnz; i+=1) {
 					#pragma HLS PIPELINE
-					#pragma HLS UNROLL factor=PARALLEL_ROW
+					//#pragma HLS UNROLL factor=PARALLEL_ROW
 					//DTYPE v = A_accel.read();
 					//int   ci = col_indices_fifo.read();
 					DTYPE v = A_accel[i];
@@ -346,6 +348,7 @@ void kernelMult(
 	#pragma HLS INTERFACE m_axi port=columnIndex offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=rowPtr offset=slave bundle=gmem0
 	*/
+	
 	
 	#pragma HLS INTERFACE m_axi port=array_a offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=array_b offset=slave bundle=gmem1
