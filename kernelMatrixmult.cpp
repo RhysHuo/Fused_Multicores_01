@@ -345,7 +345,7 @@ void kernelMult(
 	#pragma HLS INTERFACE m_axi port=array_b offset=slave bundle=gmem1
 	#pragma HLS INTERFACE m_axi port=array_c offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=values offset=slave bundle=gmem0
-	#pragma HLS INTERFACE m_axi port=columnIndex offset=slave bundle=gmem0
+	#pragma HLS INTERFACE m_axi port=colIndices offset=slave bundle=gmem0
 	#pragma HLS INTERFACE m_axi port=rowPtr offset=slave bundle=gmem0
 	
 	
