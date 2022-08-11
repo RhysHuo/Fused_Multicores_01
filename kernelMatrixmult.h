@@ -193,18 +193,17 @@ extern "C" {
 		ap_int<8> zero_point_dst, 
 		ap_int<8> clamp_max,
 		ap_int<8> clamp_min,
+		DTYPE* array_a, 
+		DTYPE* array_b, 
+		DTYPE* array_c,
+		DTYPE *values,
+		int *colIndices,
+		int *rowPtr,
+		int nnz,
 		int N, 
 		int M, 
-		int P, 
-		DTYPE* A, 
-		DTYPE* B, 
-		DTYPE* C,
-		int array_c_adjust,
-		int *rowPtr,
-		int *columnIndex,
-		DTYPE *values,
-		int nnz
-	);
+		int P
+	)
 }
 
 #endif 
