@@ -26,7 +26,7 @@ SOFTWARE.
 * date      : 1 October 2021
 */
 
-#include "kernelMatrixmult.h"
+#include "fused_kernelMatrixmult.h"
 #include <hls_stream.h>
 
 // note that  BLOCK should be less than B_WIDTH_BLOCK
