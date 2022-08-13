@@ -67,7 +67,7 @@ void compute(ap_uint<2> mode, ap_int<8> zero_point_lhs,  ap_int<8> zero_point_rh
 	
        //#pragma HLS allocation function instances=dsp_kernel limit=1
 	DTYPE B_accel[B_HEIGHT][B_WIDTH_BLOCK];
-	#pragma HLS array_partition variable=B_accel block factor= 4 dim=1
+	//#pragma HLS array_partition variable=B_accel block factor= 4 dim=1
     	#pragma HLS array_partition variable=B_accel block factor= BLOCK/2 dim=2
 
         //hls::stream<DTYPE>       A_accel;
